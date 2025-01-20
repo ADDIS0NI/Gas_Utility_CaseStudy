@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="feedback-form">
+    <h2>Provide Feedback</h2>
+    <p>Service Request #{{ service_request.id }} - {{ service_request.get_request_type_display }}</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="rating-group">
+            {{ form.rating.label_tag }}
+            <div class="star-rating">
+                {{ form.rating }}
+            </div>
+            {% if form.rating.errors %}
+                <div class="error">{{ form.rating.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="comment-group">
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+            {% if form.comment.errors %}
+                <div class="error">{{ form.comment.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+</div>
+{% endblock %} 

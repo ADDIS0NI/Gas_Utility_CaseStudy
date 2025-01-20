@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gas Utility Service</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="user-menu">
+                {% if user.is_authenticated %}
+                    Welcome, {{ user.username }} | 
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a> | 
+                    <a href="{% url 'register' %}">Register</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'create_request' %}">New Request</a></li>
+                    <li><a href="{% url 'track_requests' %}">Track Requests</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <main class="content">
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer class="footer">
+            <div class="footer-grid">
+                <div class="contact-info">
+                    <h3>Contact Us</h3>
+                    <p>Customer Care: 1800-180-7788</p>
+                    <p>Email: support@gasutility.com</p>
+                </div>
+                <div class="quick-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

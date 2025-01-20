@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome to Gas Utility Service</h1>
+    
+    {% if user.is_authenticated %}
+        <h2>Your Service Requests</h2>
+        {% if service_requests %}
+            <ul>
+            {% for request in service_requests %}
+                <li>
+                    Request #{{ request.id }} - Status: {{ request.status }}
+                    <br>
+                    Service Type: {{ request.service_type }}
+                    <br>
+                    Description: {{ request.description }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't submitted any service requests yet.</p>
+        {% endif %}
+        <a href="{% url 'submit_request' %}" class="button">Submit New Request</a>
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to submit and track service requests.</p>
+    {% endif %}
+{% endblock %}

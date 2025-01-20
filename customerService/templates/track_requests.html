@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="requests-container">
+    <h2>Your Service Requests</h2>
+    
+    <a href="{% url 'create_request' %}" class="btn btn-primary">Create New Request</a>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if requests %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Team</th>
+                    <th>Scheduled</th>
+                    <th>Details</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                    <tr>
+                        <td>#{{ request.id }}</td>
+                        <td>{{ request.get_request_type_display }}</td>
+                        <td>
+                            <span class="status-badge status-{{ request.status }}">
+                                {{ request.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ request.assigned_team|default:"-" }}</td>
+                        <td>
+                            {% if request.scheduled_date %}
+                                {{ request.scheduled_date|date:"M d, Y H:i" }}
+                            {% else %}
+                                Not scheduled
+                            {% endif %}
+                        </td>
+                        <td class="details-cell">
+                            <button onclick="toggleNotes({{ request.id }})" class="btn btn-secondary">
+                                View Details
+                            </button>
+                            <div id="notes-{{ request.id }}" class="notes-content hidden">
+                                <strong>Description:</strong>
+                                <p>{{ request.description }}</p>
+                                {% if request.status_notes %}
+                                    <strong>Status Updates:</strong>
+                                    <pre>{{ request.status_notes }}</pre>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>{{ request.updated_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            {% if request.status == 'completed' and not request.feedback.exists %}
+                                <a href="{% url 'submit_feedback' request.id %}" class="btn btn-success">
+                                    Provide Feedback
+                                </a>
+                            {% elif request.feedback.exists %}
+                                <span class="feedback-given">
+                                    Feedback Submitted
+                                    <span class="rating">
+                                        {% with ''|center:request.feedback.first.rating as range %}
+                                            {% for _ in range %}★{% endfor %}
+                                        {% endwith %}
+                                    </span>
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="no-requests">
+            <p>You haven't submitted any requests yet.</p>
+            <a href="{% url 'create_request' %}" class="btn btn-primary">Create Your First Request</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleNotes(requestId) {
+    // Close all other open notes first
+    document.querySelectorAll('.notes-content:not(.hidden)').forEach(note => {
+        if (note.id !== `notes-${requestId}`) {
+            note.classList.add('hidden');
+        }
+    });
+    
+    // Toggle the clicked note
+    const notesDiv = document.getElementById(`notes-${requestId}`);
+    notesDiv.classList.toggle('hidden');
+}
+</script>
+{% endblock %}
